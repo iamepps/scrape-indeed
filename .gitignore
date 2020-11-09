@@ -5,5 +5,7 @@ __pycache__
 .DS_Store
 .ipynb_checkpoints
 
+log.log
+
 config/secrets/*
-!config/secrets/*.e
+!config/secrets/*.enc

@@ -6,7 +6,8 @@ def initialise_driver():
     options = webdriver.ChromeOptions()
 
     if os.getenv('ENV')=='local':
-        options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+        # options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+        options.binary_location = '/usr/bin/google-chrome-stable'
     else:
         options.binary_location = '/usr/bin/google-chrome-stable'
     options.add_argument('headless')

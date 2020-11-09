@@ -10,10 +10,6 @@ from src.scrape import scrape
 from selenium.webdriver.common.keys import Keys
 from time import sleep
 
-client = google.cloud.logging.Client()
-client.get_default_handler()
-client.setup_logging()
-
 if not os.getenv("ENV"):
     os.environ["ENV"] = "local"
 
@@ -21,6 +17,12 @@ if os.getenv("ENV") == "local":
     os.environ[
         "GOOGLE_APPLICATION_CREDENTIALS"
     ] = "./config/secrets/scrapes-276809-909508a2a0c4.json"
+else:
+    client = google.cloud.logging.Client()
+    client.get_default_handler()
+    client.setup_logging()
+
+
 
 TODAY = datetime.datetime.now().strftime("%Y-%m-%d")
 
@@ -33,6 +35,7 @@ logging.basicConfig(filename="log.log", level=logging.INFO)
 
 def main():
     try:
+        bucket.write('test.json', json.dumps(["this", "is", "a", "test"]))
 
         locations = config.get("locations")
 

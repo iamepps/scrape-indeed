@@ -117,7 +117,7 @@ def scrape(params, config, bucket, TODAY):
 
         # write daily output
         bucket.write(
-            f"indeed/daily/{params['l']}-{'-'.join(params['q']).split(' ')}-{TODAY}.json",
+            f"indeed/daily/{params['l']}-{'-'.join(params['q'].split(' '))}-{TODAY}.json",
             json.dumps(scraped_jobs),
         )
         driver.quit()

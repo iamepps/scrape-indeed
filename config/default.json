@@ -2,5 +2,5 @@
   "serp_base_url": "https://www.indeed.com/jobs",
  "locations": ["CA", "NY", "WA"],
  "positions": ["data scientist", "data engineer", "data analyst"],
- "results_per_page": 50
+ "results_per_page": 40
 }

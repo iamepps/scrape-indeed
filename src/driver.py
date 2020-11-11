@@ -1,17 +1,19 @@
-from selenium import webdriver
 import os
-# from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
+from sys import platform
+
 
 def initialise_driver():
     options = webdriver.ChromeOptions()
 
-    if os.getenv('ENV')=='local':
-        # options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-        options.binary_location = '/usr/bin/google-chrome-stable'
-    else:
-        options.binary_location = '/usr/bin/google-chrome-stable'
+    if platform == "linux" or platform == "linux2":
+        options.binary_location = '/usr/bin/google-chrome'
+        # options.binary_location = '/usr/bin/google-chrome-stable'
+    elif platform == "darwin":
+        options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+
     options.add_argument('headless')
     options.add_argument('no-sandbox')
-#    options.add_argument('disable-setuid-sandbox')
+
     driver = webdriver.Chrome(chrome_options=options)
     return driver

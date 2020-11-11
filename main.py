@@ -1,17 +1,15 @@
 import datetime
 import google.cloud.logging
 import os
-import json
 import logging
-import random
 from src.config import load_config
 from src.gcs import Gcs
 from src.scrape import scrape
-from selenium.webdriver.common.keys import Keys
-from time import sleep
+
 
 if not os.getenv("ENV"):
     os.environ["ENV"] = "local"
+
 
 if os.getenv("ENV") == "local":
     os.environ[
@@ -21,7 +19,6 @@ else:
     client = google.cloud.logging.Client()
     client.get_default_handler()
     client.setup_logging()
-
 
 
 TODAY = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -35,7 +32,6 @@ logging.basicConfig(filename="log.log", level=logging.INFO)
 
 def main():
     try:
-        bucket.write('test.json', json.dumps(["this", "is", "a", "test"]))
 
         locations = config.get("locations")
 
@@ -48,9 +44,8 @@ def main():
                 "start": 0,
             }
 
-            logging.info(f"Scraping {params['q']} jobs in {params['l']}")
-
             logging.info(f"Finding jobs in {location}")
+
             n_results = scrape(params, config, bucket, TODAY)
 
     except Exception as e:

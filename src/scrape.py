@@ -111,15 +111,14 @@ def scrape(params, config, bucket, TODAY):
 
     finally:
         # update scraped url history
-        bucket.write("indeed/scraped_urls_update.json", json.dumps(scraped_urls))
-        bucket.rewrite("indeed/scraped_urls.json", "indeed/scraped_urls_update.json")
-        bucket.delete("indeed/scraped_urls_update.json")
+        bucket.append("indeed/scraped_urls.json", scraped_urls)
 
         # write daily output
-        bucket.write(
-            f"indeed/daily/{params['l']}-{'-'.join(params['q'].split(' '))}-{TODAY}.json",
-            json.dumps(scraped_jobs),
-        )
+        output_path = f"indeed/daily/{params['l']}-{'-'.join(params['q'].split(' '))}-{TODAY}.json"
+        if len(bucket.list_keys(output_path)) > 0:
+            bucket.append(output_path, scraped_jobs)
+        else:
+            bucket.write(output_path, json.dumps(scraped_jobs))
         driver.quit()
 
     return len(scraped_urls)

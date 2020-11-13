@@ -10,6 +10,7 @@ selenium = "==3.8.0"
 PyVirtualDisplay = "==0.2.1"
 google-cloud-storage = "*"
 google-cloud-logging = "*"
+google-cloud-pubsub = "*"
 
 [requires]
 python_version = "3.7"

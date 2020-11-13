@@ -6,6 +6,7 @@ from requests.models import PreparedRequest
 from src.driver import initialise_driver
 from time import sleep
 
+logging.getLogger(__name__)
 
 def inject_params(url, params):
     req = PreparedRequest()
@@ -76,29 +77,43 @@ def scrape_jdp(driver, url):
     return header_text, ad_text
 
 
+def shuffle(l):
+    return sorted(l, key=lambda x: random.random())
+
+
 def scrape(params, config, bucket, TODAY):
 
     driver = initialise_driver()
 
     n_results = get_n_results(driver, config, params)
-    logging.info(f"Found {n_results} in {params['l']}")
+    logging.info(f"{n_results} results in {params['l']}")
 
     n_serps_to_scrape = n_pages_to_scrape(n_results, config)
-    print(f"Scraping {n_serps_to_scrape} pages")
 
     try:
         live_jobs = scrape_serps(driver, config, params, n_serps_to_scrape)
-
+        distinct_urls = {job['url'] for job in live_jobs}
+        logging.info(f"Collected {len(live_jobs)} jobs ({len(distinct_urls)} distinct urls) from search pages.")
     except Exception as e:
         raise e
-        logging.error("Failed to scrape SERP")
+        logging.error("Failed to scrape SERPs")
+
 
     scraped_urls = json.loads(bucket.read("indeed/scraped_urls.json"))
-    live_jobs = [job for job in live_jobs if job["url"] not in scraped_urls]
+    logging.info(f"Loaded {len(scraped_urls)} previously scraped jobs")
+
+    new_jobs = [job for job in live_jobs if job["url"] not in scraped_urls]
+    logging.info(f"Found {len(new_jobs)} unseen jobs to scrape")
+
     scraped_jobs = []
 
     try:
-        for job in live_jobs[: config.get("jobs_per_serp_limit")]:
+        jobs_to_scrape = shuffle(new_jobs[: config.get("jobs_per_serp_limit")])
+        for i, job in enumerate(jobs_to_scrape):
+
+            if i % 50 == 0:
+                logging.info(f"scraping url {i}")
+
             header_text, ad_text = scrape_jdp(driver, job["url"])
             job["header_text"] = header_text
             job["ad_text"] = ad_text
@@ -111,7 +126,10 @@ def scrape(params, config, bucket, TODAY):
 
     finally:
         # update scraped url history
-        bucket.append("indeed/scraped_urls.json", scraped_urls)
+        bucket.write("indeed/scraped_urls_tmp.json", json.dumps(list(scraped_urls)))
+        bucket.rewrite("indeed/scraped_urls.json", "indeed/scraped_urls_tmp.json")
+        bucket.delete("indeed/scraped_urls_tmp.json")
+
 
         # write daily output
         output_path = f"indeed/daily/{params['l']}-{'-'.join(params['q'].split(' '))}-{TODAY}.json"

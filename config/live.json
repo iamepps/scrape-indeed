@@ -1,3 +1,7 @@
 {
-  "locations": ["CA", "NY", "WA"]
+  "positions": ["data scientist", "data engineer", "data analyst"],
+  "locations": ["CA", "NY", "WA"],
+  "gcs_project_id": "scrapes-276809",
+  "gcs_topic_id": "stop-instance-event",
+  "pubsub_payload": {"zone": "europe-west2-b", "label": "name=scrape"}
 }

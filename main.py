@@ -2,6 +2,7 @@ import datetime
 import google.cloud.logging
 import os
 import logging
+from src.mop_up import server_down
 from src.config import load_config
 from src.gcs import Gcs
 from src.scrape import scrape
@@ -31,6 +32,7 @@ logging.basicConfig(filename="log.log", level=logging.INFO)
 
 
 def main():
+
     try:
 
         locations = config.get("locations")
@@ -52,6 +54,9 @@ def main():
         raise e
         logging.error(e)
 
+    finally:
+
+        server_down(config)
 
 if __name__ == "__main__":
     main()

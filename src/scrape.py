@@ -59,7 +59,7 @@ def scrape_serps(driver, config, params, n_to_scrape):
     job_stubs = []
 
     for i in range(n_to_scrape):
-        params["start"] = i
+        params["start"] = i * param['limit']
         url = inject_params(config["serp_base_url"], params)
         driver.get(url)
         job_stubs.extend(parse_cards(driver))
